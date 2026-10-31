@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+body {
+  margin: 0;
+  font-family: Inter, system-ui, Arial, sans-serif;
+}
+
+button {
+  cursor: pointer;
+}
