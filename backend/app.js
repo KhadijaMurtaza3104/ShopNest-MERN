@@ -1,3 +1,4 @@
+
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
@@ -7,24 +8,32 @@ const authRoutes = require("./routes/authRoutes");
 const categoryRoutes = require("./routes/categoryRoutes");
 const productRoutes = require("./routes/productRoutes");
 const orderRoutes = require("./routes/orderRoutes");
-
-const app = express();
 const aiRoutes = require("./routes/aiRoutes");
 
+const app = express();
+
+// Security middleware
 app.use(helmet());
+
+// CORS configuration
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  "https://shop-nest-mern-us85.vercel.app",
+  "https://shop-nest-mern-qlgh.vercel.app",
+];
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "http://127.0.0.1:5173",
-      "https://shop-nest-mern-qlgh.vercel.app",
-    ],
+    origin: allowedOrigins,
+    credentials: true,
   })
 );
 
+// Body parser
 app.use(express.json({ limit: "1mb" }));
 
+// Rate limiting for authentication routes
 app.use(
   "/api/auth",
   rateLimit({
@@ -35,24 +44,28 @@ app.use(
   })
 );
 
+// Backend health check
 app.get("/", (req, res) => {
   res.status(200).json({
     message: "ShopNest API is running successfully",
   });
 });
 
+// API routes
 app.use("/api/auth", authRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/ai", aiRoutes);
 
+// 404 handler
 app.use((req, res) => {
   res.status(404).json({
     message: "API route not found",
   });
 });
 
+// Global error handler
 app.use((err, req, res, next) => {
   console.error("API error:", err);
 
